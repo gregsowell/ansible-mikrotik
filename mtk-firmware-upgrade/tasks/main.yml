@@ -22,18 +22,14 @@
 #    - debug:
 #        var: current
 
-    - name: Create update script
+    - name: Upgrade RB firmware if needed
       routeros_command:
-        commands: /system script add dont-require-permissions=no name=firm-upgrade source="/system rou up; /system reboot"
+        commands: /system rou up
       when: current is version_compare(upgrade, '<')
+#      when: current != upgrade
 
-    - name: Add schedule to call upgrade
+    - name: Reboot the router
       routeros_command:
-        commands: !!str /system scheduler add disabled=no name=firm-upgrade on-event=firm-upgrade
-      when: current is version_compare(upgrade, '<')
-
-    - name: Set scheduler time for 1 min in the future if it needs to upgrade
-      routeros_command:
-        commands: !!str /system scheduler set [find name=firm-upgrade] disabled=no start-date=[/system clock get date] start-time=(([:pick [/system clock get time] 0 3]) . ([:pick [/system clock get time] 3 5] + 1) . ([:pick [/system clock get time] 5 8]))
+        commands: ":execute {/system reboot;delay 1;quit}"
       when: current is version_compare(upgrade, '<')
 #      when: current != upgrade

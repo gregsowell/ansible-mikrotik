@@ -4,6 +4,8 @@ mtk-ros-upgrade is a role that when used will check that ROS is updated and if n
 !<br>
 mtk-firmware-upgrade is a role that when used will upgrade the firware on a Mikrotik<br>
 !<br>
+mtk-ssh-keys is a role that when used will create an RSA keypair on the Ansible host, and install the public key on a MTK device<br>
+!<br>
 mtk-password is a role that when used will update the password for a supplied user<br><br>
 <h1>Ansible Playbooks</h1><br><br>
 mtk-wlan2-ani enables adaptive noise immunity on wlan2(usually the 5ghz radio)<br>

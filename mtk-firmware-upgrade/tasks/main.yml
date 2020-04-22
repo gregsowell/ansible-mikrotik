@@ -24,7 +24,7 @@
 
     - name: Upgrade RB firmware if needed
       routeros_command:
-        commands: /system rou up
+        commands: ":execute {/system rou up;delay 1;quit}"
       when: current is version_compare(upgrade, '<')
 #      when: current != upgrade
 

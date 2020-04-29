@@ -13,3 +13,8 @@ mtk-wlan2-ani enables adaptive noise immunity on wlan2(usually the 5ghz radio)<b
 mtk-wlan2-power drastically lowers power on wlan2 by setting its dBi on the interface artifically high and setting it to indoor<br>
 !<br>
 mtk-wlan2-tuning enables a whole host of tweaks for the wlan2 radio<br>
+!<br>
+mtk-switch-interface-desc loops through a switch looking at the neighbor table.  It filters the table by type ether for copper<br>
+interfaces.  It also looks for devices that start with "Room" as their identity.  I set the CPEs in the rooms to be named Room101, <br>
+Room205, etc.  So adjust the filters as you need.  It then loops through each neighbor entry and updates the physical interface<br>
+description so that it's easy to see which device is connected to which switch port.

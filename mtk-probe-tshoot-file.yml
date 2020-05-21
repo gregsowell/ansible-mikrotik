@@ -1,14 +1,11 @@
 ---
 - name: Reach out to remote probes and troubleshoot routing
-  hosts: all
+  hosts: tshoot_probes
   gather_facts: no
   vars:
-    run_user: awx # this is the user who is running the scripts/sets up file permissions
     ansible_command_timeout: 120
-#    destIP: 8.8.8.8
-    destIP: "{{ dest_ip }}"
-#    srcIP: 0.0.0.0
-    srcIP: "{{ src_ip }}"
+    destIP: 8.8.8.8
+    srcIP: 0.0.0.0
   tasks:
 
 
@@ -58,8 +55,6 @@
         path: /etc/ansible/temp
         state: directory
         mode: '0755'
-        owner: "{{ run_user }}"
-        group: "{{ run_user }}"
       become: yes
       run_once: yes
 
@@ -68,8 +63,6 @@
         path: /etc/ansible/tshoot
         state: directory
         mode: '0755'
-        owner: "{{ run_user }}"
-        group: "{{ run_user }}"
       become: yes
       run_once: yes
 
@@ -92,4 +85,3 @@
         src: /etc/ansible/temp
         dest: "/etc/ansible/tshoot/{{ destIP}}-{{ time}}.txt"
       run_once: yes
-      delegate_to: localhost

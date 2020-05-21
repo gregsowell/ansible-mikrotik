@@ -51,7 +51,7 @@
       file:
         path: /etc/ansible/temp
         state: absent
-      become: yes
+#      become: yes
       run_once: yes
       delegate_to: localhost
 
@@ -63,7 +63,7 @@
         mode: '0755'
         owner: "{{ run_user }}"
         group: "{{ run_user }}"
-      become: yes
+      #become: yes
       run_once: yes
       delegate_to: localhost
 
@@ -75,7 +75,7 @@
         mode: '0755'
         owner: "{{ run_user }}"
         group: "{{ run_user }}"
-      become: yes
+      #become: yes
       run_once: yes
       delegate_to: localhost
 

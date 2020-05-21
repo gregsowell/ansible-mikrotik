@@ -3,6 +3,7 @@
   hosts: all
   gather_facts: no
   vars:
+    run_user: awx # this is the user who is running the scripts/sets up file permissions
     ansible_command_timeout: 120
 #    destIP: 8.8.8.8
     destIP: "{{ dest_ip }}"
@@ -57,6 +58,8 @@
         path: /etc/ansible/temp
         state: directory
         mode: '0755'
+        owner: "{{ run_user }}"
+        group: "{{ run_user }}"
       become: yes
       run_once: yes
 
@@ -65,6 +68,8 @@
         path: /etc/ansible/tshoot
         state: directory
         mode: '0755'
+        owner: "{{ run_user }}"
+        group: "{{ run_user }}"
       become: yes
       run_once: yes
 

@@ -1,0 +1,89 @@
+---
+- name: Reach out to remote probes and troubleshoot routing
+  hosts: all
+  gather_facts: no
+  vars:
+    ansible_command_timeout: 120
+#    destIP: 8.8.8.8
+    destIP: "{{ dest_ip }}"
+#    srcIP: 0.0.0.0
+    srcIP: "{{ src_ip }}"
+  tasks:
+
+
+    - name: Ping Destination
+      routeros_command:
+        commands:
+          - "/ping count=10 {{ destIP }}"
+      register: pings
+
+#    - name: Print out results of pings
+#      debug:
+#        msg: "{{ pings }}"
+
+    - name: Ping Source
+      routeros_command:
+        commands:
+          - "/ping count=10 {{ srcIP }}"
+      register: pings_source
+      when: srcIP != "0.0.0.0"
+
+    - name: Traceroute Destinations
+      routeros_command:
+        commands:
+          - "/tool traceroute count=1 {{ destIP }}"
+      register: traces
+
+    - name: Traceroute source
+      routeros_command:
+        commands:
+          - "/tool traceroute count=1 {{ srcIP }}"
+      register: traces_source
+      when: srcIP != "0.0.0.0"
+
+    - name: setup time variable
+      set_fact: time="{{lookup('pipe','date \"+%Y-%m-%d-%H-%M\"')}}"
+      run_once: true
+
+    - name: Recursively remove temp directory
+      file:
+        path: /etc/ansible/temp
+        state: absent
+      become: yes
+      run_once: yes
+
+    - name: Create temp directory
+      file:
+        path: /etc/ansible/temp
+        state: directory
+        mode: '0755'
+      become: yes
+      run_once: yes
+
+    - name: Create tshoot directory if it doesn't exist
+      file:
+        path: /etc/ansible/tshoot
+        state: directory
+        mode: '0755'
+      become: yes
+      run_once: yes
+
+    - name: save output to file for no source
+      connection: local
+      copy:
+        content: "##################{{ inventory_hostname }}##################\n===pings===\n{{ pings.stdout|join('\n') }}\n===traces===\n{{ traces.stdout|join('\n') }}\n\n"
+        dest: "/etc/ansible/temp/{{ inventory_hostname }}_info.txt"
+      when: srcIP == "0.0.0.0"
+
+    - name: save output to file with source
+      connection: local
+      copy:
+        content: "##################{{ inventory_hostname }}##################\n===pings destination===\n{{ pings.stdout|join('\n') }}\n===traces destination===\n{{ traces.stdout|join('\n') }}\n===pings source===\n{{ pings_source.stdout|join('\n') }}\n===traces source===\n{{ traces_source.stdout|join('\n') }}\n\n"
+        dest: "/etc/ansible/temp/{{ inventory_hostname }}_info.txt"
+      when: srcIP != "0.0.0.0"
+
+    - name: Assemble the individual outputs into a single file
+      assemble:
+        src: /etc/ansible/temp
+        dest: "/etc/ansible/tshoot/{{ destIP}}-{{ time}}.txt"
+      run_once: yes

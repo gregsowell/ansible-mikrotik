@@ -40,10 +40,6 @@
       register: traces_source
       when: srcIP != "0.0.0.0"
 
-    - name: setup time variable
-      set_fact: time="{{lookup('pipe','date \"+%Y-%m-%d-%H-%M\"')}}"
-      run_once: true
-
     - name: display output for no source
       debug:
         msg: 

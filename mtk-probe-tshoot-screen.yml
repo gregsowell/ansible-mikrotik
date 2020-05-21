@@ -47,31 +47,37 @@
       run_once: true
 
     - name: Recursively remove temp directory
+      connection: local
       file:
         path: /etc/ansible/temp
         state: absent
-#      become: yes
+      become: yes
       run_once: yes
+#      delegate_to: localhost
 
     - name: Create temp directory
+      connection: local
       file:
         path: /etc/ansible/temp
         state: directory
         mode: '0755'
         owner: "{{ run_user }}"
         group: "{{ run_user }}"
-#      become: yes
+      become: yes
       run_once: yes
+#      delegate_to: localhost
 
     - name: Create tshoot directory if it doesn't exist
+      connection: local
       file:
         path: /etc/ansible/tshoot
         state: directory
         mode: '0755'
         owner: "{{ run_user }}"
         group: "{{ run_user }}"
-#      become: yes
+      become: yes
       run_once: yes
+#      delegate_to: localhost
 
     - name: save output to file for no source
       connection: local

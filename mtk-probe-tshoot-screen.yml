@@ -49,7 +49,7 @@
     - name: Recursively remove temp directory
 #      connection: local
       file:
-        path: /etc/ansible/temp
+        path: /opt/tshoot/temp
         state: absent
 #      become: yes
       run_once: yes
@@ -58,11 +58,11 @@
     - name: Create temp directory
 #      connection: local
       file:
-        path: /etc/ansible/temp
+        path: /opt/tshoot/temp
         state: directory
         mode: '0755'
-        owner: "{{ run_user }}"
-        group: "{{ run_user }}"
+#        owner: "{{ run_user }}"
+#        group: "{{ run_user }}"
       #become: yes
       run_once: yes
       delegate_to: localhost
@@ -70,11 +70,11 @@
     - name: Create tshoot directory if it doesn't exist
 #      connection: local
       file:
-        path: /etc/ansible/tshoot
+        path: /opt/tshoot
         state: directory
         mode: '0755'
-        owner: "{{ run_user }}"
-        group: "{{ run_user }}"
+ #       owner: "{{ run_user }}"
+ #       group: "{{ run_user }}"
       #become: yes
       run_once: yes
       delegate_to: localhost
@@ -83,19 +83,19 @@
       connection: local
       copy:
         content: "##################{{ inventory_hostname }}##################\n===pings===\n{{ pings.stdout|join('\n') }}\n===traces===\n{{ traces.stdout|join('\n') }}\n\n"
-        dest: "/etc/ansible/temp/{{ inventory_hostname }}_info.txt"
+        dest: "/opt/tshoot/temp/{{ inventory_hostname }}_info.txt"
       when: srcIP == "0.0.0.0"
 
     - name: save output to file with source
       connection: local
       copy:
         content: "##################{{ inventory_hostname }}##################\n===pings destination===\n{{ pings.stdout|join('\n') }}\n===traces destination===\n{{ traces.stdout|join('\n') }}\n===pings source===\n{{ pings_source.stdout|join('\n') }}\n===traces source===\n{{ traces_source.stdout|join('\n') }}\n\n"
-        dest: "/etc/ansible/temp/{{ inventory_hostname }}_info.txt"
+        dest: "/opt/tshoot/temp/{{ inventory_hostname }}_info.txt"
       when: srcIP != "0.0.0.0"
 
     - name: Assemble the individual outputs into a single file
       assemble:
-        src: /etc/ansible/temp
-        dest: "/etc/ansible/tshoot/{{ destIP}}-{{ time}}.txt"
+        src: /opt/tshoot/temp
+        dest: "/opt/tshoot/{{ destIP}}-{{ time}}.txt"
       run_once: yes
       delegate_to: localhost

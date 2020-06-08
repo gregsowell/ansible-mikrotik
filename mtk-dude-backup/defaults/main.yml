@@ -1,0 +1,11 @@
+---
+# defaults file for mtk-dude-backup
+# what to name the backup file
+    bup_file: home-dude
+#increase the timeout for larger dude directories
+    ansible_command_timeout: 120
+#ftp username/password details
+    ftp_user: ftp
+    ftp_pass: ftp
+#where to save the file on the local server
+    ftp_dest: /etc/ansible/backups/

@@ -1,0 +1,19 @@
+---
+# tasks file for mtk-dude-backup
+  - name: Issue the backup database command
+    routeros_command:
+      commands: "/dude export-db backup-file={{ bup_file }}"
+
+  - name: FTP the file off of the router
+    local_action:
+      module: ftp
+      host: "{{ ansible_host }}"
+      user: "{{ ftp_user }}"
+      password: "{{ ftp_pass }}"
+      src: "{{ bup_file }}"
+      dest: "{{ ftp_dest }}"
+      direction: pull
+
+  - name: Delete the backup file on the router
+    routeros_command:
+      commands: "/file remove [/file find name={{ bup_file }}]"

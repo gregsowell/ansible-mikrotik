@@ -40,7 +40,7 @@
       when: srcIP != "0.0.0.0"
 
     - name: setup time variable
-      set_fact: time="{{lookup('pipe','date \"+%Y-%m-%d-%H-%M\"')}}"
+      set_fact: time="{{ lookup('pipe','date \"+%Y-%m-%d-%H-%M\"') }}"
       run_once: true
 
     - name: Recursively remove temp directory
@@ -83,5 +83,5 @@
     - name: Assemble the individual outputs into a single file
       assemble:
         src: /etc/ansible/temp
-        dest: "/etc/ansible/tshoot/{{ destIP}}-{{ time}}.txt"
+        dest: "/etc/ansible/tshoot/{{ destIP }}-{{ time }}.txt"
       run_once: yes

@@ -42,24 +42,24 @@
 
     - name: display output for no source
       debug:
-        msg: 
+        msg:
           - "##################{{ inventory_hostname }}##################"
           - "===pings==="
           - "{{ pings.stdout_lines }}"
           - "===traces==="
-          - "{{ traces.stdout_lines }}" 
+          - "{{ traces.stdout_lines }}"
       when: srcIP == "0.0.0.0"
 
     - name: display output with source
       debug:
-        msg: 
+        msg:
           - "##################{{ inventory_hostname }}##################"
           - "===pings to destination==="
           - "{{ pings.stdout_lines }}"
           - "===traces to destination==="
-          - "{{ traces.stdout_lines }}" 
+          - "{{ traces.stdout_lines }}"
           - "===pings to source==="
           - "{{ pings_source.stdout_lines }}"
           - "===traces to source==="
-          - "{{ traces_source.stdout_lines }}" 
+          - "{{ traces_source.stdout_lines }}"
       when: srcIP != "0.0.0.0"

@@ -2,16 +2,19 @@
 # tasks file for mtk-ros-upgrade
     - name: Check version - populates the fields
       routeros_command:
-        commands: /system packa up check
+        commands:
+           - /system package update check-for-updates
     - name: Check if an update is needed
       routeros_command:
-        commands: "[:put ([/system packa up get status])]"
+        commands:
+          - "[:put ([/system package update check-for-updates])]"
       register: output
 #    - name: print variable
 #      debug:
 #        msg: "{{ output }}"
     - name: Run upgrade if new version is available
       routeros_command:
-        commands: /system packa up install
+        commands:
+           - /system package update install
       when: output.stdout is search('available')
 

@@ -1,0 +1,9 @@
+---
+- name: Check routerboard firmware and upgrade if needed
+  hosts: r1
+  gather_facts: false
+  vars:
+    ansible_ssh_user: ansible
+
+  roles:
+    - mtk-firmware-upgrade

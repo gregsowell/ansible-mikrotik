@@ -1,0 +1,26 @@
+---
+- name: wlan2 radio tuning
+  connection: network_cli
+  gather_facts: false
+  hosts: lab_mikrotiks
+  tasks:
+
+    - name: wlan2 radio disable wps/enable ANI
+      routeros_command:
+        commands: /interface wireless set [ find default-name=wlan2 ] wps-mode=disabled adaptive-noise-immunity=ap-and-client-mode
+
+    - name: wlan2 radio rate-set
+      routeros_command:
+        commands: /interface wireless set [ find default-name=wlan2 ] rate-set=configured
+
+    - name: wlan2 radio basic rates
+      routeros_command:
+        commands: /interface wireless set [ find default-name=wlan2 ] basic-rates-a/g=12Mbps
+
+    - name: wlan2 radio supported rates
+      routeros_command:
+        commands: /interface wireless set [ find default-name=wlan2 ] supported-rates-a/g="12Mbps,18Mbps,24Mbps,36Mbps,48Mbps,54Mbps"
+
+    - name: wlan2 radio band, distance, protocol
+      routeros_command:
+        commands: /interface wireless set [ find default-name=wlan2 ] band=5ghz-n/ac distance=indoors wireless-protocol=802.11

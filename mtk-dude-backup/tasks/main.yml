@@ -1,0 +1,17 @@
+---
+# tasks file for mtk-dude-backup
+  - name: Issue the backup database command
+    routeros_command:
+      commands:
+        - "/dude export-db backup-file={{ bup_file }}"
+
+  - name: New FTP file off the router
+    get_url:
+      url: "ftp://{{ ftp_user }}:{{ ftp_pass }}@{{ inventory_hostname }}:21/{{ bup_file }}"
+      dest: "{{ ftp_dest }}"
+    delegate_to: localhost
+
+  - name: Delete the backup file on the router
+    routeros_command:
+      commands:
+        - "/file remove [/file find name={{ bup_file }}]"

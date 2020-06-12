@@ -1,0 +1,35 @@
+---
+# tasks file for mtk-firmware-upgrade
+    - name: Get Firmware
+      routeros_command:
+        commands: /system routerboard print
+      register: output
+
+    - name: Get Upgrade Firmware Line
+      set_fact:
+        upgrade: "{{ item | replace('upgrade-firmware: ', '') | trim }}"
+      when: "'upgrade-firmware:' in item"
+      loop: "{{ output.stdout_lines[0] }}"
+
+    - name: Get Current Firmware Line
+      set_fact:
+        current: "{{ item | replace('current-firmware: ', '') | trim }}"
+      when: "'current-firmware:' in item"
+      loop: "{{ output.stdout_lines[0] }}"
+
+#    - debug:
+#        var: upgrade
+#    - debug:
+#        var: current
+
+    - name: Upgrade RB firmware if needed
+      routeros_command:
+        commands: ":execute {/system rou up;delay 1;quit}"
+      when: current is version_compare(upgrade, '<')
+#      when: current != upgrade
+
+    - name: Reboot the router
+      routeros_command:
+        commands: ":execute {/system reboot;delay 1;quit}"
+      when: current is version_compare(upgrade, '<')
+#      when: current != upgrade

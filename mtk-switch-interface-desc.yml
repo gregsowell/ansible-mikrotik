@@ -1,0 +1,15 @@
+---
+- name: Check neighbor tables and then update the interface comments with room names
+  connection: network_cli
+  gather_facts: false
+  hosts: cheatham_idf_switches
+  vars:
+#    ansible_command_timeout: 120
+
+  tasks:
+
+    - name: Run the command to set interface descriptions
+      routeros_command:
+        commands:
+# note that I'm looking for ether interfaces.  The CPEs I have in the rooms are in the format Room100.
+          - :local cpes [/ip neighbor print detail as-value where interface~"ether" and identity~"Room"]; :foreach cpe in=$cpes do={/interface set [/interface find name=[:pick ($cpe->"interface") 0 [:find ($cpe->"interface") "b"]]] comment=($cpe->"identity");}

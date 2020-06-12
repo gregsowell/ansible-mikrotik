@@ -1,0 +1,12 @@
+---
+- name: Backup MikroTik Dude Server via FTP
+  hosts: dude
+  gather_facts: no
+  strategy: free
+  vars:
+# I recommend setting the timeout to two minutes or even longer depending on how long it takes the device to pull the file.
+    ansible_command_timeout: 120
+    ansible_ssh_user: ansible
+
+  roles:
+    - mtk-dude-backup

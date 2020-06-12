@@ -1,0 +1,30 @@
+---
+# tasks file for mtk-ssh-keys
+    - name: generate the keypair
+      openssh_keypair:
+#         path: /etc/ansible/greg_id_ssh_rsa
+        path: ~/.ssh/id_rsa
+        type: rsa
+
+    - name: do the ftp transfer
+      local_action:
+        module: ftp
+        host: "{{ hostvars[inventory_hostname].ansible_ssh_host }}"
+        user: "{{ hostvars[inventory_hostname].ansible_user }}"
+        password: "{{ hostvars[inventory_hostname].ansible_password }}"
+#        src: /etc/ansible/greg_id_ssh_rsa.pub
+        src: ~/.ssh/id_rsa.pub
+        dest: /greg_id_ssh_rsa.pub
+        direction: push
+
+    - name: create the ssh user on the mikrotik router
+      routeros_command:
+        commands: "/user add group=full password=tacos1234 name={{ remote_ssh_user }}"
+
+    - name: install the key in the routers
+      routeros_command:
+        commands: "user ssh import public-key-file=greg_id_ssh_rsa.pub user={{ remote_ssh_user }}"
+
+# you can use this to test
+# ssh -l admin-ssh 192.168.88.109 ":put \"hello\""
+# ssh -l admin-ssh -i /etc/ansible/greg_id_ssh_rsa 192.168.88.109 ":put \"hello\""

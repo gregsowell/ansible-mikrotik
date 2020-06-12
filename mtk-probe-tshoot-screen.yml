@@ -1,0 +1,65 @@
+---
+- name: Reach out to remote probes and troubleshoot routing
+  hosts: all
+  gather_facts: no
+  vars:
+    ansible_command_timeout: 120
+#    destIP: 8.8.8.8
+    destIP: "{{ dest_ip }}"
+#    srcIP: 0.0.0.0
+    srcIP: "{{ src_ip }}"
+  tasks:
+
+    - name: Ping Destination
+      routeros_command:
+        commands:
+          - "/ping count=10 {{ destIP }}"
+      register: pings
+
+#    - name: Print out results of pings
+#      debug:
+#        msg: "{{ pings }}"
+
+    - name: Ping Source
+      routeros_command:
+        commands:
+          - "/ping count=10 {{ srcIP }}"
+      register: pings_source
+      when: srcIP != "0.0.0.0"
+
+    - name: Traceroute Destinations
+      routeros_command:
+        commands:
+          - "/tool traceroute count=1 {{ destIP }}"
+      register: traces
+
+    - name: Traceroute source
+      routeros_command:
+        commands:
+          - "/tool traceroute count=1 {{ srcIP }}"
+      register: traces_source
+      when: srcIP != "0.0.0.0"
+
+    - name: display output for no source
+      debug:
+        msg:
+          - "##################{{ inventory_hostname }}##################"
+          - "===pings==="
+          - "{{ pings.stdout_lines }}"
+          - "===traces==="
+          - "{{ traces.stdout_lines }}"
+      when: srcIP == "0.0.0.0"
+
+    - name: display output with source
+      debug:
+        msg:
+          - "##################{{ inventory_hostname }}##################"
+          - "===pings to destination==="
+          - "{{ pings.stdout_lines }}"
+          - "===traces to destination==="
+          - "{{ traces.stdout_lines }}"
+          - "===pings to source==="
+          - "{{ pings_source.stdout_lines }}"
+          - "===traces to source==="
+          - "{{ traces_source.stdout_lines }}"
+      when: srcIP != "0.0.0.0"

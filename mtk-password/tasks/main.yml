@@ -1,4 +1,0 @@
----
-  - name: Find and set the user password with supplied info
-    routeros_command:
-      commands: "/user set [/user find where name={{ usr_name }}] password={{ pword }}"

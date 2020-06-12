@@ -1,3 +1,0 @@
----
-# vars file for mtk-ros-upgrade
-ansible_command_timeout: 120

@@ -7,7 +7,9 @@
     destIP: 1.1.1.1
     srcIP: 0.0.0.0
 
-    method: slack
+    send_slack: True
+    send_email: False
+    send_snow: False
 
     email_host: smtp.gmail.com
     email_port: 587
@@ -18,6 +20,12 @@
 
     slack_channel: '#ansible'
 #    slack_token: thisis/thetoken/givenbyslackwebhook
+
+#    snow_username: admin
+#    snow_password: mysnowpword
+#    snow_instance: dev99999
+#    snow_caller_id: Abel Tuter
+    snow_caller_id: System Administrator
 
   tasks:
 
@@ -57,18 +65,74 @@
         send_msg: "##################Testing to {{ destIP }}##################\n##################{{ inventory_hostname }}##################\n===pings destination===\n{{ pings.stdout|join('\n') }}\n===traces destination===\n{{ traces.stdout|join('\n') }}\n===pings source===\n{{ pings_source.stdout|join('\n') }}\n===traces source===\n{{ traces_source.stdout|join('\n') }}\n\n"
       when: srcIP != "0.0.0.0"
 
+    - name: create SNOW incident
+      when: send_snow
+      run_once: True
+      ignore_errors: True
+      block:
+        - name: Create an incident
+          snow_record:
+            username: "{{ snow_username }}"
+            password: "{{ snow_password }}"
+            instance: "{{ snow_instance }}"
+            state: present
+            data:
+              short_description: "Zab-Tower - Device Down - {{ destIP }}"
+#              description: Something here useful
+              caller_id: "{{ snow_caller_id }}"
+              severity: 3
+              priority: 5
+          register: new_incident
+
+        - set_fact:
+            ticket_number: "{{ new_incident.record.number }}"
+
+    - name: debug new_incident
+      when: ticket_number is defined
+      run_once: True
+      debug:
+        msg: "Ticket Number is: {{ ticket_number | default('None')}}"
+
+
+    - name: create SNOW incident
+      when: send_snow
+      ignore_errors: True
+      block:
+        - name: Add pings
+          snow_record:
+            username: "{{ snow_username }}"
+            password: "{{ snow_password }}"
+            instance: "{{ snow_instance }}"
+            state: present
+            number: "{{ ticket_number }}"
+            data:
+              comments: "##################{{ inventory_hostname }}##################\n===pings===\n{{ pings.stdout|join('\n') }}\n"
+
+        - name: Add traces
+          snow_record:
+            username: "{{ snow_username }}"
+            password: "{{ snow_password }}"
+            instance: "{{ snow_instance }}"
+            state: present
+            number: "{{ ticket_number }}"
+            data:
+              comments: "##################{{ inventory_hostname }}##################\n===traces===\n{{ traces.stdout|join('\n') }}\n"
+
+
     - name: send message through slack
-      when: method == 'slack'
+      when: send_slack
       slack:
         token: "{{ slack_token }}"
-        msg: "{{ send_msg }}"
+        msg: |
+          "SNOW ticket {{ new_incident.record.number | default('None')}}"
+          "{{ send_msg }}"
         channel: "{{ slack_channel }}"
 #        thread_id: 1539917263.000100
         parse: 'none'
       delegate_to: localhost
 
     - name: Sending an e-mail using Gmail SMTP servers
-      when: method == 'email'
+      when: send_email
       mail:
         host: "{{ email_host }}"
         port: "{{ email_port }}"
@@ -76,5 +140,8 @@
         password: "{{ email_pword }}"
         to: "{{ email_to }}"
         subject: "{{ email_subject }}"
-        body: "{{ send_msg }}"
+#        body: "{{ send_msg }}"
+        body: |
+          "SNOW ticket {{ new_incident.record.number | default('None')}}"
+          "{{ send_msg }}"
       delegate_to: localhost

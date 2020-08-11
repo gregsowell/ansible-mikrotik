@@ -124,7 +124,7 @@
       slack:
         token: "{{ slack_token }}"
         msg: |
-          "SNOW ticket {{ new_incident.record.number | default('None')}}"
+          "SNOW ticket https://{{ snow_instance }}.service-now.com/nav_to.do?uri=incident.do?sysparm_query=number={{ new_incident.record.number | default('None')}}"
           "{{ send_msg }}"
         channel: "{{ slack_channel }}"
 #        thread_id: 1539917263.000100
@@ -142,6 +142,6 @@
         subject: "{{ email_subject }}"
 #        body: "{{ send_msg }}"
         body: |
-          "SNOW ticket {{ new_incident.record.number | default('None')}}"
+          "SNOW ticket https://{{ snow_instance }}.service-now.com/nav_to.do?uri=incident.do?sysparm_query=number={{ new_incident.record.number | default('None')}}"
           "{{ send_msg }}"
       delegate_to: localhost

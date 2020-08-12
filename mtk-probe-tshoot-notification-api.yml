@@ -126,11 +126,10 @@
 #        msg: |
 #          "SNOW ticket {{ new_incident.record.number | default('None')}}"
 #          "{{ send_msg }}"
-      attachments:
-        - text: "{{ send_msg }}"
-          title: "SNOW ticket {{ new_incident.record.number | default('None')}}"
-          title_link: "https://{{ snow_instance }}.service-now.com/nav_to.do?uri=incident.do?sysparm_query=number={{ new_incident.record.number | default('None')}}"
-
+        attachments:
+          - text: "{{ send_msg }}"
+            title: "SNOW ticket {{ new_incident.record.number | default('None')}}"
+            title_link: "https://{{ snow_instance }}.service-now.com/nav_to.do?uri=incident.do?sysparm_query=number={{ new_incident.record.number | default('None')}}"
         channel: "{{ slack_channel }}"
 #        thread_id: 1539917263.000100
         parse: 'none'

@@ -71,7 +71,7 @@
       ignore_errors: True
       block:
         - name: Create an incident
-          servicenow.servicenow.snow_record:
+          servicenow.itsm.snow_record:
             username: "{{ snow_username }}"
             password: "{{ snow_password }}"
             instance: "{{ snow_instance }}"

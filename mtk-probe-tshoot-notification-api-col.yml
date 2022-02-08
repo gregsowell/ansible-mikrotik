@@ -99,7 +99,7 @@
       ignore_errors: True
       block:
         - name: Add pings
-          servicenow.servicenow.snow_record:
+          servicenow.itsm.snow_record:
             username: "{{ snow_username }}"
             password: "{{ snow_password }}"
             instance: "{{ snow_instance }}"
@@ -109,7 +109,7 @@
               comments: "##################{{ inventory_hostname }}##################\n===pings===\n{{ pings.stdout|join('\n') }}\n"
 
         - name: Add traces
-          servicenow.servicenow.snow_record:
+          servicenow.itsm.snow_record:
             username: "{{ snow_username }}"
             password: "{{ snow_password }}"
             instance: "{{ snow_instance }}"

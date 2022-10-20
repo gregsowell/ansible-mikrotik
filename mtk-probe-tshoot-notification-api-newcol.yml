@@ -57,12 +57,12 @@
 
     - name: display output for no source
       ansible.builtin.set_fact:
-        send_msg: "##################Testing to {{ destIP }}##################\n##################{{ inventory_hostname }}##################\n===pings===\n{{ pings.stdout|join('\n') }}\n===traces===\n{{ traces.stdout|join('\n') }}\n\n"
+        send_msg: "##################Testing to {{ destIP }}##################\n##################{{ inventory_hostname }}##################\n===pings===\n{{ pings.stdout|join('\n') | regex_replace('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n','') }}\n===traces===\n{{ traces.stdout|join('\n') | regex_replace('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n','') }}\n\n"
       when: srcIP == "0.0.0.0"
 
     - name: display output with source
       ansible.builtin.set_fact:
-        send_msg: "##################Testing to {{ destIP }}##################\n##################{{ inventory_hostname }}##################\n===pings destination===\n{{ pings.stdout|join('\n') }}\n===traces destination===\n{{ traces.stdout|join('\n') }}\n===pings source===\n{{ pings_source.stdout|join('\n') }}\n===traces source===\n{{ traces_source.stdout|join('\n') }}\n\n"
+        send_msg: "##################Testing to {{ destIP }}##################\n##################{{ inventory_hostname }}##################\n===pings destination===\n{{ pings.stdout|join('\n') | regex_replace('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n','') }}\n===traces destination===\n{{ traces.stdout|join('\n') | regex_replace('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n','')}}\n===pings source===\n{{ pings_source.stdout|join('\n') | regex_replace('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n','') }}\n===traces source===\n{{ traces_source.stdout|join('\n') | regex_replace('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n','') }}\n\n"
       when: srcIP != "0.0.0.0"
 
     - name: create SNOW incident
@@ -106,7 +106,7 @@
             state: present
             number: "{{ ticket_number }}"
             data:
-              comments: "##################{{ inventory_hostname }}##################\n===pings===\n{{ pings.stdout|join('\n') }}\n"
+              comments: "##################{{ inventory_hostname }}##################\n===pings===\n{{ pings.stdout|join('\n') | regex_replace('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n','') }}\n"
 
         - name: Add traces
           servicenow.servicenow.snow_record:
@@ -116,7 +116,7 @@
             state: present
             number: "{{ ticket_number }}"
             data:
-              comments: "##################{{ inventory_hostname }}##################\n===traces===\n{{ traces.stdout|join('\n') }}\n"
+              comments: "##################{{ inventory_hostname }}##################\n===traces===\n{{ traces.stdout|join('\n') | regex_replace('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n','') }}\n"
 
 
     - name: send message through slack
